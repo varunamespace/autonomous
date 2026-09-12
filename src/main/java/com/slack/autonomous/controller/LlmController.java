@@ -16,7 +16,7 @@ public class LlmController {
     }
 
     @GetMapping("/ask")
-    public String ask(@RequestParam String question) {
-        return llmService.ask(question);
+    public String ask(@RequestParam String conversationId,@RequestParam String question) {
+        return llmService.ask(conversationId,question);
     }
 }

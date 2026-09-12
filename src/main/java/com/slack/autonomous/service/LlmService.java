@@ -2,7 +2,10 @@ package com.slack.autonomous.service;
 
 import com.slack.autonomous.RagMcpServer;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.memory.ChatMemoryRepository;
+import org.springframework.ai.session.advisor.SessionMemoryAdvisor;
 import org.springframework.ai.tool.annotation.Tool;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -12,8 +15,8 @@ public class LlmService {
     private final ChatClient chatClient;
     private final RagMcpServer ragMcpServer;
 
-    public LlmService(ChatClient.Builder builder, RagMcpServer ragMcpServer) {
-        this.chatClient = builder.build();
+    public LlmService(ChatClient.Builder builder, RagMcpServer ragMcpServer, SessionMemoryAdvisor sessionMemoryAdvisor) {
+        this.chatClient = builder.defaultAdvisors(sessionMemoryAdvisor).build();
         this.ragMcpServer = ragMcpServer;
     }
 
@@ -28,10 +31,14 @@ public class LlmService {
     }
 
 
-    public String ask(String question) {
+    public String ask(String conversatonId,String question) {
         return chatClient
                 .prompt()
                 .user(question)
+                .advisors(a -> a.param(
+                        SessionMemoryAdvisor.SESSION_ID_CONTEXT_KEY,
+                        conversatonId
+                ))
                 .tools(this)
                 .call()
                 .content();
