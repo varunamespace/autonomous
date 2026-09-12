@@ -23,7 +23,6 @@ public class RagMcpServer {
         if (mcpClients.isEmpty()) {
             throw new IllegalStateException("No MCP clients configured. Check your MCP client configuration.");
         }
-        // Use the first configured MCP server (your local Python RAG).
         this.mcpClient = mcpClients.get(0);
     }
 
